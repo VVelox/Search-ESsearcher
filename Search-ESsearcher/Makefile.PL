@@ -22,6 +22,7 @@ my %WriteMakefileArgs = (
 									   'Error::Helper' => '1.0.0',
 									   'Search::Elasticsearch' => '6.00',
 									   'Template' => '2.29',
+									   'Template::Plugin::JSON' => '0.08',
 									   },
 						 dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
 						 clean => { FILES => 'Search-ESsearcher-*' },

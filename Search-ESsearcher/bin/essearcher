@@ -1,2 +1,43 @@
 #!/usr/bin/env perl
 
+use strict;
+use warnings;
+use Search::ESsearcher;
+use Getopt::Long qw(:config pass_through);
+
+# set all the templates the servers use to to fault
+my $search;
+my $options;
+my $output;
+my $elastic;
+
+GetOptions(
+		   's=s' => \$search,
+		   'g=s' => \$options,
+		   'o=s' => \$output,
+		   'e=s' => \$elastic,
+		   );
+
+my $ess = Search::ESsearcher->new();
+
+# reels in the options
+$ess->options_set( $options );
+$ess->load_options;
+$ess->get_options;
+
+# reels in the search template
+$ess->search_set( $search );
+$ess->load_search;
+$ess->search_fill_in;
+
+# reels in the elastic config
+$ess->elastic_set( $elastic );
+$ess->load_elastic;
+
+my $results=$ess->search_run;
+
+
+
+use Data::Dumper;
+print Dumper( $results );
+
