@@ -23,6 +23,8 @@ my %WriteMakefileArgs = (
 									   'Search::Elasticsearch' => '6.00',
 									   'Template' => '2.29',
 									   'Template::Plugin::JSON' => '0.08',
+									   'Time::ParseDate' => '2015.103',
+									   'Term::ANSIColor' => '4.06',
 									   },
 						 dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
 						 clean => { FILES => 'Search-ESsearcher-*' },

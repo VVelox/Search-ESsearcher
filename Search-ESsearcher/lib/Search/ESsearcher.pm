@@ -77,6 +77,7 @@ sub new{
 									 '3'=>'nameInvalid',
 									 '4'=>'searchNotUsable',
 									 '5'=>'elasticNotLoadable',
+									 '6'=>'notResults',
 									 }
 							 },
 				};
@@ -349,8 +350,9 @@ sub load_output{
     }
 
 	my $file=undef;
+	my $data=undef;
 
-	# ~/ -> etc -> error
+	# ~/ -> etc -> module -> error
 	if (
 		( defined( $ENV{'HOME'} ) ) &&
 		( -f $ENV{'HOME'}.'/.config/essearcher/output/'.$self->{output} )
@@ -362,29 +364,40 @@ sub load_output{
 			 ) {
 		$file=$self->{base}.'/etc/essearcher/outpot/'.$self->{output};
 	} else {
-		$self->{error}=2;
-		$self->{errorString}='No options file with the name "'.$self->{output}.'" was found';
-		$self->warn;
-		return undef;
+		# do a quick check of making sure we have a valid name before trying a module...
+		# not all valid names are perl module name valid, but it will prevent arbitrary code execution
+		if ( $self->name_validate( $self->{options} ) ) {
+			my $to_eval='use Search::ESsearcher::Templates::'.$self->{output}.
+			'; $data=Search::ESsearcher::Templates::'.$self->{output}.'->output;';
+			eval( $to_eval );
+		}
+		# if undefined, it means the eval failed
+		if ( ! defined( $data ) ) {
+			$self->{error}=2;
+			$self->{errorString}='No options file with the name "'.$self->{output}.'" was found';
+			$self->warn;
+			return undef;
+		}
 	}
 
-	my $fh;
-	if (! open($fh, '<', $file ) ) {
-		$self->{error}=1;
-		$self->{errorString}='Failed to open "'.$file.'"',
-		$self->warn;
-		return undef;
+	if ( ! defined( $data ) ) {
+		my $fh;
+		if (! open($fh, '<', $file ) ) {
+			$self->{error}=1;
+			$self->{errorString}='Failed to open "'.$file.'"',
+			$self->warn;
+			return undef;
+		}
+		# if it is larger than 2M bytes, something is wrong as the template
+		# it takes is literally longer than all HHGTTG books combined
+		if (! read($fh, $data, 200000000 )) {
+			$self->{error}=1;
+			$self->{errorString}='Failed to read "'.$file.'"',
+			$self->warn;
+			return undef;
+		}
+		close($fh);
 	}
-	my $data;
-	# if it is larger than 2M bytes, something is wrong as the template
-	# it takes is literally longer than all HHGTTG books combined
-	if (! read($fh, $data, 200000000 )) {
-		$self->{error}=1;
-		$self->{errorString}='Failed to read "'.$file.'"',
-		$self->warn;
-		return undef;
-	}
-	close($fh);
 
 	# we have now completed with out error, so save it
 	$self->{output_template}=$data;
@@ -568,6 +581,75 @@ sub output_set{
 	return 1;
 }
 
+=head2 results_process
+
+=cut
+
+sub results_process{
+	my $self=$_[0];
+	my $results=$_[1];
+
+	if ( ! $self->errorblank ) {
+        return undef;
+    }
+
+	#make sure we have a sane object passed to us
+	if (
+		( ref( $results ) ne 'HASH' ) ||
+		( !defined( $results->{hits} ) )||
+		( !defined( $results->{hits}{hits} ) )
+		){
+		$self->{error}=6;
+		$self->{errorString}='The passed results variable does not a appear to be a search results return';
+		$self->warn;
+		return undef;
+	}
+
+	#use Data::Dumper;
+	#print Dumper( $results->{hits}{hits} );
+
+	my $vars={
+			  o=>$self->{parsed_options},
+			  r=>$results,
+			  c=>sub{ return color( $_[0] ); },
+			  pd=>sub{
+				  if( $_[0] =~ /^raw\:/ ){
+					  $_[0] =~ s/^raw\://;
+					  return $_[0];
+				  }
+				  $_[0]=~s/m$/minutes/;
+				  $_[0]=~s/M$/months/;
+				  $_[0]=~s/d$/days/;
+				  $_[0]=~s/h$/hours/;
+				  $_[0]=~s/h$/weeks/;
+				  $_[0]=~s/y$/years/;
+				  $_[0]=~s/([0123456789])$/$1seconds/;
+				  $_[0]=~s/([0123456789])s$/$1seconds/;
+				  my $secs="";
+				  eval{ $secs=parsedate( $_[0] ); };
+				  return $secs;
+			  },
+			  };
+
+	my @formatted;
+	foreach my $doc ( @{ $results->{hits}{hits} } ){
+		$vars->{doc}=$doc;
+		$vars->{f}=$doc->{_source};
+
+		my $processed;
+		$self->{t}->process( \$self->{output_template}, $vars , \$processed );
+		chomp($processed);
+
+		push(@formatted,$processed);
+	}
+
+	@formatted=reverse(@formatted);
+
+	my $formatted_string=join("\n", @formatted);
+
+	print $formatted_string;
+}
+
 =head search_get
 
 =cut
@@ -614,14 +696,13 @@ sub search_fill_in{
 				  eval{ $secs=parsedate( $_[0] ); };
 				  return $secs;
         },
-
 			  };
 
 	my $processed;
 	$self->{t}->process( \$self->{search_template}, $vars , \$processed );
 
 	$self->{search_filled_in}=$processed;
-print $processed;
+
 	$self->{search_usable}=undef;
 
 	eval {

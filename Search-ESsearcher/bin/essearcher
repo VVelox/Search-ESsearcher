@@ -34,10 +34,13 @@ $ess->search_fill_in;
 $ess->elastic_set( $elastic );
 $ess->load_elastic;
 
+#runs the search
 my $results=$ess->search_run;
 
+# processes the results
+$ess->load_output;
+$ess->results_process( $results );
 
-
-use Data::Dumper;
-print Dumper( $results );
+#use Data::Dumper;
+#print Dumper( $results );
 

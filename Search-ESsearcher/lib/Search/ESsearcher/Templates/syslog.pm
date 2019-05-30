@@ -1,7 +1,6 @@
 package Search::ESsearcher::Templates::syslog;
 
 use 5.006;
-use base Error::Helper;
 use strict;
 use warnings;
 
@@ -161,9 +160,8 @@ dlte=s
 ';
 }
 
-#					  [% IF o.dgt %]
-#					  {"range": {
-#						  
-#					  }
-#					   },
-#					  [% END %]
+sub output{
+	return '[% c("cyan") %][% f.timestamp %] [% c("bright_blue") %][% f.logsource %] '.
+	'[% c("bright_green") %][% f.program %][[% c("bright_white") %][% f.pid %][% c("bright_green") %]] '.
+	'[% c("white") %][% f.message %]';
+}
