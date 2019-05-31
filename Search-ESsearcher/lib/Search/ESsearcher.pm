@@ -677,23 +677,31 @@ sub search_fill_in{
 
 	my $vars={
 			  o=>$self->{parsed_options},
+			  aon=>sub{
+				  $_[0]=~s/\+/\ AND\ /;
+				  $_[0]=~s/\,/\ OR\ /;
+				  $_[0]=~s/\!/\ NOT\ /;
+				  return $_[0];
+			  },
 			  pd=>sub{
-				  if( $_[0] =~ /^raw\:/ ){
-					  $_[0] =~ s/^raw\://;
-					  return $_[0];
+				  if( $_[0] =~ /^u\:/ ){
+					  $_[0] =~ s/^u\://;
+					  $_[0]=~s/m$/minutes/;
+					  $_[0]=~s/M$/months/;
+					  $_[0]=~s/d$/days/;
+					  $_[0]=~s/h$/hours/;
+					  $_[0]=~s/h$/weeks/;
+					  $_[0]=~s/y$/years/;
+					  $_[0]=~s/([0123456789])$/$1seconds/;
+					  $_[0]=~s/([0123456789])s$/$1seconds/;
+					  my $secs="";
+					  eval{ $secs=parsedate( $_[0] ); };
+					  return $secs;
+				  }elsif( $_[0] =~ /^\-/ ){
+					  return 'now'.$_[0];
 				  }
-				  $_[0]=~s/m$/minutes/;
-				  $_[0]=~s/M$/months/;
-				  $_[0]=~s/d$/days/;
-				  $_[0]=~s/h$/hours/;
-				  $_[0]=~s/h$/weeks/;
-				  $_[0]=~s/y$/years/;
-				  $_[0]=~s/([0123456789])$/$1seconds/;
-				  $_[0]=~s/([0123456789])s$/$1seconds/;
-				  my $secs="";
-				  eval{ $secs=parsedate( $_[0] ); };
-				  return $secs;
-        },
+				  return $_[0];
+			  },
 			  };
 
 	my $processed;
@@ -702,7 +710,7 @@ sub search_fill_in{
 	$self->{search_filled_in}=$processed;
 
 	$self->{search_usable}=undef;
-#print $processed;
+
 	eval {
 		my $decoded=$self->{j}->decode( $processed );
 		$self->{search_hash}=$decoded;

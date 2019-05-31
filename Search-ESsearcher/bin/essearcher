@@ -12,11 +12,13 @@ my $output;
 my $elastic;
 my $module;
 my $invert;
+my $print_search;
 GetOptions(
 		   's=s' => \$search,
 		   'g=s' => \$options,
 		   'o=s' => \$output,
 		   'e=s' => \$elastic,
+		   'S' => \$print_search,
 		   'm=s' => \$module,
 		   'i' => \$invert,
 		   );
@@ -45,7 +47,11 @@ $ess->get_options;
 # reels in the search template
 $ess->search_set( $search );
 $ess->load_search;
-$ess->search_fill_in;
+my $filled_in=$ess->search_fill_in;
+if ( $print_search ){
+	print $filled_in;
+	exit 255;
+}
 
 # reels in the elastic config
 $ess->elastic_set( $elastic );

@@ -61,6 +61,8 @@ return '
 [% DEFAULT o.pid = "*" %]
 [% DEFAULT o.msg = "*" %]
 [% DEFAULT o.size = "50" %]
+[% DEFAULT o.field = "type" %]
+[% DEFAULT o.fieldv = "syslog" %]
 {
  "index": "logstash-*",
  "body": {
@@ -69,35 +71,35 @@ return '
 		 "bool": {
 			 "must": [
 					  {
-					   "term": { "type": "syslog" } },
+					   "term": { [% o.field.json %]: [% o.fieldv.json %] } },
 					  {"query_string": {
 						  "default_field": "host",
-						  "query": [% o.host.json %]
+						  "query": [% aon( o.host ).json %]
 					  }
 					   },
 					  {"query_string": {
 						  "default_field": "logsource",
-						  "query": [% o.src.json %]
+						  "query": [% aon( o.src ).json %]
 					  }
 					   },
 					  {"query_string": {
 						  "default_field": "program",
-						  "query": [% o.program.json %]
+						  "query": [% aon( o.program ).json %]
 					  }
 					   },
 					  {"query_string": {
 						  "default_field": "facility_label",
-						  "query": [% o.facility.json %]
+						  "query": [% aon( o.facility ).json %]
 					  }
 					   },
 					  {"query_string": {
 						  "default_field": "severity_label",
-						  "query": [% o.severity.json %]
+						  "query": [% aon( o.severity ).json %]
 					  }
 					   },
 					  {"query_string": {
 						  "default_field": "pid",
-						  "query": [% o.pid.json %]
+						  "query": [% aon( o.pid ).json %]
 					  }
 					   },
 					  {"query_string": {
@@ -169,6 +171,6 @@ msg=s
 
 sub output{
 	return '[% c("cyan") %][% f.timestamp %] [% c("bright_blue") %][% f.logsource %] '.
-	'[% c("bright_green") %][% f.program %][[% c("bright_white") %][% f.pid %][% c("bright_green") %]] '.
-	'[% c("white") %][% f.message %]';
+	'[% c("bright_green") %][% f.program %][% c("bright_magenta") %][[% c("bright_yellow") %]'.
+	'[% f.pid %][% c("bright_magenta") %]] [% c("white") %][% f.message %]';
 }
