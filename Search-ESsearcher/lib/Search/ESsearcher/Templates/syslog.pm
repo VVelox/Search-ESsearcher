@@ -59,6 +59,7 @@ return '
 [% DEFAULT o.facility = "*" %]
 [% DEFAULT o.severity = "*" %]
 [% DEFAULT o.pid = "*" %]
+[% DEFAULT o.msg = "*" %]
 [% DEFAULT o.size = "50" %]
 {
  "index": "logstash-*",
@@ -97,6 +98,11 @@ return '
 					  {"query_string": {
 						  "default_field": "pid",
 						  "query": [% o.pid.json %]
+					  }
+					   },
+					  {"query_string": {
+						  "default_field": "message",
+						  "query": [% o.msg.json %]
 					  }
 					   },
 					  [% IF o.dgt %]
@@ -157,6 +163,7 @@ dgt=s
 dgte=s
 dlt=s
 dlte=s
+msg=s
 ';
 }
 

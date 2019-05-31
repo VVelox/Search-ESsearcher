@@ -10,13 +10,30 @@ my $search;
 my $options;
 my $output;
 my $elastic;
-
+my $module;
+my $invert;
 GetOptions(
 		   's=s' => \$search,
 		   'g=s' => \$options,
 		   'o=s' => \$output,
 		   'e=s' => \$elastic,
+		   'm=s' => \$module,
+		   'i' => \$invert,
 		   );
+
+# Use module as the base to use allowing
+# the other settings to override it if defined.
+if (defined( $module )){
+	if (!defined( $options )){
+		$options=$module;
+	}
+	if (!defined( $output )){
+		$output=$module;
+	}
+	if (!defined( $search )){
+		$search=$module;
+	}
+}
 
 my $ess = Search::ESsearcher->new();
 
@@ -39,7 +56,12 @@ my $results=$ess->search_run;
 
 # processes the results
 $ess->load_output;
-$ess->results_process( $results );
+my @formatted=$ess->results_process( $results );
+#invert if requested
+if ($invert){
+	@formatted=reverse(@formatted);
+}
+print join("\n", @formatted)."\n";
 
 #use Data::Dumper;
 #print Dumper( $results );

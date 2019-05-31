@@ -645,9 +645,7 @@ sub results_process{
 
 	@formatted=reverse(@formatted);
 
-	my $formatted_string=join("\n", @formatted);
-
-	print $formatted_string;
+	return @formatted;
 }
 
 =head search_get
@@ -704,7 +702,7 @@ sub search_fill_in{
 	$self->{search_filled_in}=$processed;
 
 	$self->{search_usable}=undef;
-
+#print $processed;
 	eval {
 		my $decoded=$self->{j}->decode( $processed );
 		$self->{search_hash}=$decoded;
