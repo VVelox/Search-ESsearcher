@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Search::ESsearcher;
 use Getopt::Long qw(:config pass_through);
+use Data::Dumper;
 
 # set all the templates the servers use to to fault
 my $search;
@@ -13,12 +14,14 @@ my $elastic;
 my $module;
 my $invert;
 my $print_search;
+my $print_results;
 GetOptions(
 		   's=s' => \$search,
 		   'g=s' => \$options,
 		   'o=s' => \$output,
 		   'e=s' => \$elastic,
 		   'S' => \$print_search,
+		   'R' => \$print_results,
 		   'm=s' => \$module,
 		   'i' => \$invert,
 		   );
@@ -59,16 +62,22 @@ $ess->load_elastic;
 
 #runs the search
 my $results=$ess->search_run;
+if ($print_results){
+	print Dumper($results);
+	exit;
+}
 
 # processes the results
 $ess->load_output;
 my @formatted=$ess->results_process( $results );
+if (!defined($formatted[0])){
+	exit 0;
+}
 #invert if requested
 if ($invert){
 	@formatted=reverse(@formatted);
 }
 print join("\n", @formatted)."\n";
+exit 0;
 
-#use Data::Dumper;
-#print Dumper( $results );
 

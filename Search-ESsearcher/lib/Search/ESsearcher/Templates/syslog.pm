@@ -47,6 +47,9 @@ This uses a logstash configuration below.
       }
     }
 
+The important bit is "type" being set to "syslog". If that is not used,
+use the command line options field and fieldv.
+
 =cut
 
 
@@ -71,7 +74,8 @@ return '
 		 "bool": {
 			 "must": [
 					  {
-					   "term": { [% o.field.json %]: [% o.fieldv.json %] } },
+					   "term": { [% o.field.json %]: [% o.fieldv.json %] }
+					   },
 					  {"query_string": {
 						  "default_field": "host",
 						  "query": [% aon( o.host ).json %]
@@ -79,7 +83,7 @@ return '
 					   },
 					  {"query_string": {
 						  "default_field": "logsource",
-						  "query": [% aon( o.src ).json %]
+						  "query": [% o.src.json %]
 					  }
 					   },
 					  {"query_string": {
@@ -153,7 +157,6 @@ return '
 
 sub options{
 return '
-log=s
 host=s
 src=s
 program=s
@@ -166,6 +169,8 @@ dgte=s
 dlt=s
 dlte=s
 msg=s
+field=s
+fieldv=s
 ';
 }
 
@@ -173,4 +178,58 @@ sub output{
 	return '[% c("cyan") %][% f.timestamp %] [% c("bright_blue") %][% f.logsource %] '.
 	'[% c("bright_green") %][% f.program %][% c("bright_magenta") %][[% c("bright_yellow") %]'.
 	'[% f.pid %][% c("bright_magenta") %]] [% c("white") %][% f.message %]';
+}
+
+sub help{
+	return '
+
+host <log host>     The syslog server.
+src <src server>    The source server sending to the syslog server.
+program <program>   The name of the daemon/program in question.
+size <count>        The number of items to return.
+facility <facility> The syslog facility.
+severity <severity> The severity level of the message.
+pid <pid>           The PID that sent the message.
+dgt <date>          Date greater than.
+dgte <date>         Date greater than or equal to.
+dlt <date>          Date less than.
+dlte <date>         Date less than or equal to.
+msg <message>       Messages to match.
+field <field>       The term field to use for matching them all.
+fieldv <fieldv>     The value of the term field to matching them all.
+
+
+
+AND, OR, or NOT shortcut
+, OR
++ AND
+! NOT
+
+A list seperated by any of those will be transformed
+
+These may be used with program, facility, pid, or host.
+
+example: --program postfix,spamd
+
+
+
+field and fieldv
+
+The search template is written with the expectation that logstash is setting
+"type" with a value of "syslog". If you are using like "tag" instead of "type"
+or the like, this allows you to change the field and value.
+
+
+
+date
+
+/^-/ appends "now" to it. So "-5m" becomes "now-5m".
+
+/^u\:/ takes what is after ":" and uses Time::ParseDate to convert it to a
+unix time value.
+
+Any thing not matching maching any of the above will just be passed on.
+';
+
+
 }
