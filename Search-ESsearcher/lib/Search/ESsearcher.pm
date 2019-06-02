@@ -13,7 +13,7 @@ use Time::ParseDate;
 
 =head1 NAME
 
-Search::ESsearcher - The great new Search::ESsearcher!
+Search::ESsearcher - Provides a handy system for doing templated elasticsearch searches.
 
 =head1 VERSION
 
