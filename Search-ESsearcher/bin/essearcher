@@ -1,4 +1,11 @@
 #!/usr/bin/env perl
+#
+#This software is Copyright (c) 2019 by Zane C. Bowers-Hadley.
+#
+#This is free software, licensed under:
+#
+#  The Artistic License 2.0 (GPL Compatible)
+
 
 use strict;
 use warnings;
@@ -9,6 +16,11 @@ use Data::Dumper;
 sub version{
 	print "essearch: 0.0.0\n";
 };
+
+# disable color if asked
+if ( defined( $ENV{NO_COLOR} ) ){
+	$ENV{ANSI_COLORS_DISABLED}=1;
+}
 
 # set all the templates the servers use to to fault
 my $search;
@@ -207,3 +219,90 @@ print join("\n", @formatted)."\n";
 exit 0;
 
 
+=head1 NAME
+
+essearcher - A utility for using templates for searching elasticsearch.
+
+=head1 SYNOPSIS
+
+essearcher [B<-e> <elastic>] [B<-s> <search>] [B<-g> <options>] [B<-o> <options>] ...
+
+essearcher [B<-m> <name>] [B<-e> <elastic>] ...
+
+essearcher B<-n> B<-w> <warn> B<-c> <critical> ...
+
+=head1 FLAGS
+
+=head2 -s <search>
+
+The search template to use.
+
+=head2 -g <getopts>
+
+The getopts config to use.
+
+=head2 -o <output>
+
+Thee output template to use.
+
+=head2 -m <module>
+
+Set all of the above to the same.
+Any of the above being set will override this.
+
+=head2 -e <elastic>
+
+The elasticsearch config to use.
+
+=head2 -S
+
+Print the search out after filling it in and exit.
+
+=head2 -R
+
+Run the search and print it via Data::Dumper.
+
+=head2 -i
+
+Invert the results.
+
+=head2 -n <check>
+
+Operate as a nagios style check.
+
+In check mode, -w and -c both most be specified. The value
+of -n is used to determine the equality to use when evaluating
+-w and -c. The table is as below.
+
+gt  >
+gte >=
+lt  <
+lte <=
+
+The order is as below.
+
+$hits $check $warn/critical
+
+=head2 -w <warn>
+
+Number of hits to throw a warning at.
+
+=head2 -c <crit>
+
+Number of hits to throw a critical at.
+
+=head2 -h
+
+Print the help.
+
+=head2 --help
+
+Print the help.
+
+=head1 ENVIROMENTAL VARIABLES
+
+=head2 NO_COLOR
+
+If this is set, it disables color output.
+
+=cut
