@@ -6,7 +6,7 @@ use warnings;
 
 =head1 NAME
 
-Search::ESsearcher::Templates::syslog - Provides a basic syslog template 
+Search::ESsearcher::Templates::syslog - Provides syslog support for essearcher.
 
 =head1 VERSION
 
@@ -15,15 +15,6 @@ Version 0.0.0
 =cut
 
 our $VERSION = '0.0.0';
-
-
-=head1 SYNOPSIS
-
-    use Search::ESsearcher::Templates::syslog;
-
-    my $options = Search::ESsearcher::Templates::syslog->options;
-    my $search = Search::ESsearcher::Templates::syslog->search;
-    my $output = Search::ESsearcher::Templates::syslog->output;
 
 =head1 LOGSTASH
 
@@ -49,6 +40,89 @@ This uses a logstash configuration below.
 
 The important bit is "type" being set to "syslog". If that is not used,
 use the command line options field and fieldv.
+
+=head1 Options
+
+=head2 --host <log host>
+
+The syslog server.
+
+=head2 --src <src server>
+
+The source server sending to the syslog server.
+
+=head2  --program <program>
+
+The name of the daemon/program in question.
+
+=head2 --size <count>
+
+The number of items to return.
+
+=head2 --facility <facility>
+
+The syslog facility.
+
+=head2 --severity <severity>
+
+The severity level of the message.
+
+=head2 --pid <pid>
+
+ The PID that sent the message.
+
+=head2 --dgt <date>
+
+Date greater than.
+
+=head2 --dgte <date>
+
+Date greater than or equal to.
+
+=head2 --dlt <date>
+
+Date less than.
+
+=head2 --dlte <date>
+
+Date less than or equal to.
+
+=head2 --msg <message>
+
+Messages to match.
+
+=head2 --field <field>
+
+The term field to use for matching them all.
+
+=head2 --fieldv <fieldv>
+
+The value of the term field to matching them all.
+
+=head1 AND, OR, or NOT shortcut
+
+    , OR
+    + AND
+    ! NOT
+
+A list seperated by any of those will be transformed
+
+These may be used with program, facility, pid, or host.
+
+    example: --program postfix,spamd
+    
+    results: postfix OR spamd
+
+=head1 date
+
+date
+
+/^-/ appends "now" to it. So "-5m" becomes "now-5m".
+
+/^u\:/ takes what is after ":" and uses Time::ParseDate to convert it to a
+unix time value.
+
+Any thing not matching maching any of the above will just be passed on.
 
 =cut
 
@@ -183,20 +257,20 @@ sub output{
 sub help{
 	return '
 
-host <log host>     The syslog server.
-src <src server>    The source server sending to the syslog server.
-program <program>   The name of the daemon/program in question.
-size <count>        The number of items to return.
-facility <facility> The syslog facility.
-severity <severity> The severity level of the message.
-pid <pid>           The PID that sent the message.
-dgt <date>          Date greater than.
-dgte <date>         Date greater than or equal to.
-dlt <date>          Date less than.
-dlte <date>         Date less than or equal to.
-msg <message>       Messages to match.
-field <field>       The term field to use for matching them all.
-fieldv <fieldv>     The value of the term field to matching them all.
+--host <log host>     The syslog server.
+--src <src server>    The source server sending to the syslog server.
+--program <program>   The name of the daemon/program in question.
+--size <count>        The number of items to return.
+--facility <facility> The syslog facility.
+--severity <severity> The severity level of the message.
+--pid <pid>           The PID that sent the message.
+--dgt <date>          Date greater than.
+--dgte <date>         Date greater than or equal to.
+--dlt <date>          Date less than.
+--dlte <date>         Date less than or equal to.
+--msg <message>       Messages to match.
+--field <field>       The term field to use for matching them all.
+--fieldv <fieldv>     The value of the term field to matching them all.
 
 
 

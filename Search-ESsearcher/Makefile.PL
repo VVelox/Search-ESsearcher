@@ -25,6 +25,7 @@ my %WriteMakefileArgs = (
 									   'Template::Plugin::JSON' => '0.08',
 									   'Time::ParseDate' => '2015.103',
 									   'Term::ANSIColor' => '4.06',
+									   'Data::Dumper' => '2.173',
 									   },
 						 dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
 						 clean => { FILES => 'Search-ESsearcher-*' },
