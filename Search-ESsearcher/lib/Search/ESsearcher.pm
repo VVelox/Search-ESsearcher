@@ -17,11 +17,11 @@ Search::ESsearcher - Provides a handy system for doing templated elasticsearch s
 
 =head1 VERSION
 
-Version 0.0.0
+Version 0.1.0
 
 =cut
 
-our $VERSION = '0.0.0';
+our $VERSION = '0.1.0';
 
 
 =head1 SYNOPSIS
@@ -190,7 +190,7 @@ sub fetch_help{
 	} else {
 		# do a quick check of making sure we have a valid name before trying a module...
 		# not all valid names are perl module name valid, but it will prevent arbitrary code execution
-		if ( $self->name_validate( $self->{options} ) ) {
+		if ( $self->name_validate( $self->{search} ) ) {
 			my $to_eval='use Search::ESsearcher::Templates::'.$self->{search}.
 			'; $data=Search::ESsearcher::Templates::'.$self->{search}.'->help;';
 			eval( $to_eval );
@@ -585,7 +585,7 @@ sub name_validate{
 		return 1;
 	}
 
-	$name=~s/[A-Za-z\:\-\=\_+\ ]+//;
+	$name=~s/[A-Z0-9a-z\:\-\=\_+\ ]+//;
 
 	if ( $name !~ /^$/ ){
 		return undef;

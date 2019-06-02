@@ -14,7 +14,7 @@ use Getopt::Long qw(:config pass_through);
 use Data::Dumper;
 
 sub version{
-	print "essearch: 0.0.0\n";
+	print "essearch: 0.0.1\n";
 };
 
 # disable color if asked
@@ -90,6 +90,7 @@ if (defined( $module )){
 my $ess = Search::ESsearcher->new();
 # print the help if asked to
 if ( $help ){
+	$ess->search_set( $search );
 	&version;
 	print '
 -s <search>  The search template to use.
@@ -206,6 +207,7 @@ if ( defined( $check ) ){
 }
 
 # processes the results
+$ess->output_set( $output );
 $ess->load_output;
 my @formatted=$ess->results_process( $results );
 if (!defined($formatted[0])){
