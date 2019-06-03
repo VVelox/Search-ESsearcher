@@ -332,6 +332,8 @@ If this is set, it disables color output.
 
 =head1 NOTE
 
-This script has dynamic command line options.
+This script has dynamic command line options. The ones shown above are just the defaults.
+
+For others see the help documentation via --help or check the pod of the module you are using.
 
 =cut

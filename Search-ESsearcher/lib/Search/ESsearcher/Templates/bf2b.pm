@@ -6,15 +6,15 @@ use warnings;
 
 =head1 NAME
 
-Search::ESsearcher::Templates::syslog - Provicdes support for fail2ban logs sucked down via beats.
+Search::ESsearcher::Templates::sfail2ban - Provicdes support for fail2ban logs sucked down via beats.
 
 =head1 VERSION
 
-Version 0.0.0
+Version 0.0.1
 
 =cut
 
-our $VERSION = '0.0.0';
+our $VERSION = '0.0.1';
 
 =head1 LOGSTASH
 
