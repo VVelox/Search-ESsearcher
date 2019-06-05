@@ -1187,6 +1187,10 @@ L<https://cpanratings.perl.org/d/Search-ESsearcher>
 
 L<https://metacpan.org/release/Search-ESsearcher>
 
+=item * Repository
+
+L<https://github.com/VVelox/Search-ESsearcher>
+
 =back
 
 

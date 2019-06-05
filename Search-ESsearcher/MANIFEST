@@ -11,6 +11,8 @@ bin/essearcher
 t/00-load.t
 t/01-load.t
 t/02-load.t
+t/03-load.t
+t/04-load.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
