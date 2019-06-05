@@ -10,11 +10,11 @@ Search::ESsearcher::Templates::syslog - Provides postfix support for essearcher.
 
 =head1 VERSION
 
-Version 0.0.0
+Version 0.0.1
 
 =cut
 
-our $VERSION = '0.0.0';
+our $VERSION = '0.0.1';
 
 =head1 LOGSTASH
 
@@ -90,6 +90,74 @@ The term field to use for matching them all.
 =head2 --fieldv <fieldv>
 
 The value of the term field to matching them all.
+
+=head2 --mid <msg id>
+
+Search based on the message ID.
+
+=head2 --from <address>
+
+The from address to search for.
+
+=head2 --to <address>
+
+The to address to search for.
+
+=head2 --oto <address>
+
+The original to address to search for.
+
+=head2 --noq
+
+Search for rejected messages, NOQUEUE.
+
+=head2 --ip <ip>
+
+The client IP to search for.
+
+=head2 --chost <host>
+
+The client hostname to search for.
+
+=head2 --status <status>
+
+Search using SMTP status codes.
+
+=head2 --nocountry
+
+Do not display the country code for the client IP.
+
+=head2 --noregion
+
+Do not display the region code for the client IP.
+
+=head2 --nocity
+
+Do not display the city name for the client IP.
+
+=head2 --nopostal
+
+Do not display the postal code for the client IP.
+
+=head2 --aliaswarn
+
+Show alias warnings.
+
+=head2 --showkeys
+
+Show the parsed out /postfix\_.*/ keys.
+
+=head2 --nomsg
+
+Do not show the message.
+
+=head2 --showprogram
+
+Show the syslog program name as well.
+
+=head2 --showpid
+
+Show the syslog PID as well.
 
 =head1 AND, OR, or NOT shortcut
 
@@ -475,8 +543,8 @@ sub help{
 --showkeys            Show the parsed out /postfix\_.*/ keys.
 --nomsg               Do not show the message.
 
---showprogram
---showpid
+--showprogram         Show the syslog program name as well.
+--showpid             Show the syslog PID as well.
 
 --dgt <date>          Date greater than.
 --dgte <date>         Date greater than or equal to.
