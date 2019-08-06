@@ -15,7 +15,6 @@ It has 5 parts that are listed below.
 * elastic : This is a JSON that contains the options that will be used to initialize [Search::Elasticsearch](https://metacpan.org/pod/Search::Elasticsearch).
 * search : This is a [Template](https://metacpan.org/pod/Template) template that will be fed to [Search::Elasticsearch](https://metacpan.org/pod/Search::Elasticsearch)->search.
 * output : This is a [Template](https://metacpan.org/pod/Template) template that will be be used on each found item.
-* output : This is a [Template](https://metacpan.org/pod/Template) template that will be be used on each found item.
 
 It will search for those specified in the following order.
 
@@ -23,21 +22,22 @@ It will search for those specified in the following order.
 1. $base.'/etc/essearcher/'.help.'/'.$name
 1. Search::ESsearcher::Templates::$name->$part (except for elastic)
 
-
-
 # INSTALLING
 
 # FreeBSD
+
+    pkg install perl5 p5-JSON p5-Error-Helper p5-Template p5-Template-Plugin-JSON p5-Time-ParseDate p5-Term-ANSIColor p5-Data-Dumper
+    cpanm Search::ESsearcher
 
 ## Linux
 
 ### CentOS
 
-    yum install cpan
-    cpan Search::ESsearcher
+    yum install cpanm 
+    cpanm Search::ESsearcher
 
 ### Debian
 
-    apt install perl perl-base perl-modules make
-    cpan Search::ESsearcher
+    apt install perl perl-base perl-modules make cpanminus
+    cpanm Search::ESsearcher
  
