@@ -7,6 +7,13 @@
 *.o
 *.pm.tdy
 *.bs
+Search-ESsearcher/MYMETA.json
+Search-ESsearcher/MYMETA.yml
+Search-ESsearcher/Makefile
+Search-ESsearcher/bin/.exists
+Search-ESsearcher/blib/
+Search-ESsearcher/pm_to_blib
+Search-ESsearcher/Makefile.old
 
 # Devel::Cover
 cover_db/

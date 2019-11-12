@@ -10,11 +10,11 @@ Search::ESsearcher::Templates::syslog - Provides syslog support for essearcher.
 
 =head1 VERSION
 
-Version 0.0.0
+Version 0.1.0
 
 =cut
 
-our $VERSION = '0.0.0';
+our $VERSION = '0.1.0';
 
 =head1 LOGSTASH
 
@@ -130,13 +130,6 @@ Any thing not matching maching any of the above will just be passed on.
 sub search{
 return '
 [% USE JSON ( pretty => 1 ) %]
-[% DEFAULT o.host = "*" %]
-[% DEFAULT o.src = "*" %]
-[% DEFAULT o.program = "*" %]
-[% DEFAULT o.facility = "*" %]
-[% DEFAULT o.severity = "*" %]
-[% DEFAULT o.pid = "*" %]
-[% DEFAULT o.msg = "*" %]
 [% DEFAULT o.size = "50" %]
 [% DEFAULT o.field = "type" %]
 [% DEFAULT o.fieldv = "syslog" %]
@@ -150,41 +143,55 @@ return '
 					  {
 					   "term": { [% o.field.json %]: [% o.fieldv.json %] }
 					   },
+					  [% IF o.host %]
 					  {"query_string": {
 						  "default_field": "host",
 						  "query": [% aon( o.host ).json %]
 					  }
 					   },
+					  [% END %]
+					  [% IF o.src %]
 					  {"query_string": {
 						  "default_field": "logsource",
-						  "query": [% o.src.json %]
+						  "query": [% aon( o.src ).json %]
 					  }
 					   },
+					  [% END %]
+					  [% IF o.program %]
 					  {"query_string": {
 						  "default_field": "program",
 						  "query": [% aon( o.program ).json %]
 					  }
 					   },
+					  [% END %]
+					  [% IF o.facility %]
 					  {"query_string": {
 						  "default_field": "facility_label",
 						  "query": [% aon( o.facility ).json %]
 					  }
 					   },
+					  [% END %]
+					  [% IF o.severity %]
 					  {"query_string": {
 						  "default_field": "severity_label",
 						  "query": [% aon( o.severity ).json %]
 					  }
 					   },
+					  [% END %]
+					  [% IF o.pid %]
 					  {"query_string": {
 						  "default_field": "pid",
 						  "query": [% aon( o.pid ).json %]
 					  }
 					   },
+					  [% END %]
+					  [% IF o.msg %]
 					  {"query_string": {
 						  "default_field": "message",
 						  "query": [% o.msg.json %]
 					  }
 					   },
+					  [% END %]
 					  [% IF o.dgt %]
 					  {"range": {
 						  "@timestamp": {
@@ -251,7 +258,40 @@ fieldv=s
 sub output{
 	return '[% c("cyan") %][% f.timestamp %] [% c("bright_blue") %][% f.logsource %] '.
 	'[% c("bright_green") %][% f.program %][% c("bright_magenta") %][[% c("bright_yellow") %]'.
-	'[% f.pid %][% c("bright_magenta") %]] [% c("white") %][% f.message %]';
+	'[% f.pid %][% c("bright_magenta") %]] [% c("white") %]'.
+	'[% PERL %]'.
+	'use Term::ANSIColor;'.
+	'my $f=$stash->get("f");'.
+
+	'my $msg=color("white").$f->{message};'.
+
+	'my $replace=color("cyan")."<".color("bright_magenta");'.
+	'$msg=~s/\</$replace/g;'.
+	'$replace=color("cyan").">".color("white");'.
+	'$msg=~s/\>/$replace/g;'.
+
+	'$replace=color("bright_green")."(".color("cyan");'.
+	'$msg=~s/\(/$replace/g;'.
+	'$replace=color("bright_green").")".color("white");'.
+	'$msg=~s/\)/$replace/g;'.
+
+	'my $green=color("bright_green");'.
+	'my $white=color("white");'.
+	'my $yellow=color("bright_yellow");'.
+	'my $blue=color("bright_blue");'.
+
+	'$replace=color("bright_yellow")."\'".color("cyan");'.
+	'$msg=~s/\\\'([A-Za-z0-9\\.\\#\\:\\-\\/]*)\\\'/$replace$1$yellow\'$white/g;'.
+
+	'$msg=~s/([A-Za-z\_\-]+)\=/$green$1$yellow=$white/g;'.
+
+	'$msg=~s/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/$blue$1$white/g;'.
+
+	'$msg=~s/(([A-f0-9:]+:+)+[A-f0-9]+)/$blue$1$white/g;'.
+
+	'print $msg;'.
+	'[% END %]';
+	;
 }
 
 sub help{
