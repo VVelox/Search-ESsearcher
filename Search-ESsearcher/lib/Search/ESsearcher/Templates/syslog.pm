@@ -10,11 +10,11 @@ Search::ESsearcher::Templates::syslog - Provides syslog support for essearcher.
 
 =head1 VERSION
 
-Version 0.1.0
+Version 1.0.0
 
 =cut
 
-our $VERSION = '0.1.0';
+our $VERSION = '1.0.0';
 
 =head1 LOGSTASH
 
@@ -145,15 +145,29 @@ return '
 					   },
 					  [% IF o.host %]
 					  {"query_string": {
-						  "default_field": "host",
-						  "query": [% aon( o.host ).json %]
+						  "default_field": "host.keyword",
+						  "query": [% aonHost( o.host ).json %]
+					  }
+					   },
+					  [% END %]
+					  [% IF o.hostx %]
+					  {"query_string": {
+						  "default_field": "host.keyword",
+						  "query": [% o.host.json %]
+					  }
+					   },
+					  [% END %]
+					  [% IF o.srcx %]
+					  {"query_string": {
+						  "default_field": "logsource.keyword",
+						  "query": [% o.src.json %]
 					  }
 					   },
 					  [% END %]
 					  [% IF o.src %]
 					  {"query_string": {
-						  "default_field": "logsource",
-						  "query": [% aon( o.src ).json %]
+						  "default_field": "logsource.keyword",
+						  "query": [% aonHost( o.src ).json %]
 					  }
 					   },
 					  [% END %]
@@ -239,6 +253,7 @@ return '
 sub options{
 return '
 host=s
+hostx=s
 src=s
 program=s
 size=s
@@ -252,6 +267,7 @@ dlte=s
 msg=s
 field=s
 fieldv=s
+srcx=s
 ';
 }
 
@@ -298,7 +314,9 @@ sub help{
 	return '
 
 --host <log host>     The syslog server.
+--hostx <log host>     The syslog server, raw.
 --src <src server>    The source server sending to the syslog server.
+--srcx <src server>   The source server sending to the syslog server, raw.
 --program <program>   The name of the daemon/program in question.
 --size <count>        The number of items to return.
 --facility <facility> The syslog facility.
@@ -322,12 +340,25 @@ AND, OR, or NOT shortcut
 + AND
 ! NOT
 
-A list seperated by any of those will be transformed
+A list seperated by any of those will be transformed.
 
-These may be used with program, facility, pid, or host.
+These may be used with program, facility, and pid.
 
 example: --program postfix,spamd
 
+
+
+HOST AND, OR, or NOT shortcut
+, OR
++ AND
+! NOT
+
+A list of hosts seperated by any of those will be transformed.
+A host name should always end in a period unless it is a FQDN.
+
+These may be used with host and src.
+
+example: --src wap0.foo.,printer.,a.foo.bar
 
 
 field and fieldv
