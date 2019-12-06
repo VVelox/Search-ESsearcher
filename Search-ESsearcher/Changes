@@ -1,5 +1,8 @@
 Revision history for Search-ESsearcher
 
+0.4.0	 2019-06-05/05:0
+		 - Make host searching work better for syslog. Thanks, Kevin Greene.
+
 0.3.1	 2019-06-05/05:0
 		 - Add missing options to postfix pod.
 

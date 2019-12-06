@@ -190,11 +190,8 @@ Any thing not matching maching any of the above will just be passed on.
 sub search{
 return '
 [% USE JSON ( pretty => 1 ) %]
-[% DEFAULT o.host = "*" %]
-[% DEFAULT o.src = "*" %]
 [% DEFAULT o.program = "postfix" %]
 [% DEFAULT o.facility = "mail" %]
-[% DEFAULT o.msg = "*" %]
 [% DEFAULT o.size = "50" %]
 [% DEFAULT o.field = "type" %]
 [% DEFAULT o.fieldv = "syslog" %]
@@ -208,16 +205,20 @@ return '
 					  {
 					   "term": { [% o.field.json %]: [% o.fieldv.json %] }
 					   },
+                      [% IF o.host %]
 					  {"query_string": {
 						  "default_field": "host",
 						  "query": [% aon( o.host ).json %]
 					  }
 					   },
+                      [% END %]
+                      [% IF o.src %]
 					  {"query_string": {
 						  "default_field": "logsource",
 						  "query": [% o.src.json %]
 					  }
 					   },
+                      [% END %]
 					  {"query_string": {
 						  "default_field": "program",
 						  "query": [% aon( o.program ).json %]
@@ -235,11 +236,13 @@ return '
 					  }
 					   },
 					  [% END %]
+					  [% IF o.msg %]
 					  {"query_string": {
 						  "default_field": "message",
 						  "query": [% o.msg.json %]
 					  }
 					   },
+					  [% END %]
 					  [% IF o.from %]
 					  {"query_string": {
 						  "default_field": "postfix_from",
@@ -265,6 +268,13 @@ return '
 					  {"query_string": {
 						  "default_field": "postfix_message-id",
 						  "query": [% aon( o.mid ).json %]
+					  }
+					   },
+					  [% END %]
+					  [% IF o.qid %]
+					  {"query_string": {
+						  "default_field": "postfix_queueid",
+						  "query": [% aon( o.qid ).json %]
 					  }
 					   },
 					  [% END %]
@@ -379,6 +389,7 @@ fieldv=s
 showkeys
 nomsg
 noq
+qid=s
 ';
 }
 
@@ -525,6 +536,7 @@ sub help{
 --pid <pid>           The PID that sent the message.
 
 --mid <msg id>        Search based on the message ID.
+--qid <queue id>      Search based on the queue ID.
 --from <address>      The from address to search for.
 --to <address>        The to address to search for.
 --oto <address>       The original to address to search for.
