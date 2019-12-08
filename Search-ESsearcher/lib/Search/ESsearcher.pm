@@ -17,15 +17,14 @@ Search::ESsearcher - Provides a handy system for doing templated elasticsearch s
 
 =head1 VERSION
 
-Version 0.3.1
+Version 0.4.0
 
 =cut
 
-our $VERSION = '0.3.1';
+our $VERSION = '0.4.0';
 
 
 =head1 SYNOPSIS
-
 
     use Search::ESsearcher;
 
@@ -1065,13 +1064,43 @@ So the string "postfix,spamd" would become
 Can be used like below.
 
     [% USE JSON ( pretty => 1 ) %]
-    [% DEFAULT o.program = "*" %]
     
+    [% IF o.program %]
     {"query_string": {
         "default_field": "program",
         "query": [% aon( o.program ).json %]
         }
     },
+    [% END %]
+
+This function is only available for the search template.
+
+=head2 aonHost
+
+This is AND, OR, or NOT sub that handles
+the following in a string, transforming them
+from the punctuation to the logic.
+
+    , OR
+    + AND
+    ! NOT
+
+So the string "foo.,mail.bar." would become
+"/foo./ OR /mail.bar./".
+
+This is best used with $field.keyword.
+
+Can be used like below.
+
+    [% USE JSON ( pretty => 1 ) %]
+
+    [% IF o.host %]
+    {"query_string": {
+        "default_field": "host.keyword",
+        "query": [% aonHost( o.host ).json %]
+        }
+    },
+    [% END %]
 
 This function is only available for the search template.
 

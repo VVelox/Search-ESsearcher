@@ -10,11 +10,11 @@ Search::ESsearcher::Templates::syslog - Provides postfix support for essearcher.
 
 =head1 VERSION
 
-Version 0.0.1
+Version 0.1.0
 
 =cut
 
-our $VERSION = '0.0.1';
+our $VERSION = '0.1.0';
 
 =head1 LOGSTASH
 
@@ -51,9 +51,29 @@ the postfix messages. These files are included with this as well.
 
 The syslog server.
 
+The search is done with .keyword appended to the field name.
+
+=head2 --hostx <log host>
+
+The syslog server.
+
+Does not run the it through aonHost.
+
+The search is done with .keyword appended to the field name.
+
 =head2 --src <src server>
 
 The source server sending to the syslog server.
+
+The search is done with .keyword appended to the field name.
+
+=head2 --srcx <src server>
+
+The source server sending to the syslog server.
+
+Does not run the it through aonHost.
+
+The search is done with .keyword appended to the field name.
 
 =head2 --size <count>
 
@@ -173,6 +193,21 @@ These may be used with program, facility, pid, or host.
     
     results: postfix OR spamd
 
+=head1 HOST AND, OR, or NOT shortcut
+
+    , OR
+    + AND
+    ! NOT
+
+A list of hosts seperated by any of those will be transformed.
+A host name should always end in a period unless it is a FQDN.
+
+These may be used with host and src.
+
+example: --src foo.,mail.bar.
+
+results: /foo./ OR /mail.bar./
+
 =head1 date
 
 date
@@ -207,15 +242,29 @@ return '
 					   },
                       [% IF o.host %]
 					  {"query_string": {
-						  "default_field": "host",
-						  "query": [% aon( o.host ).json %]
+						  "default_field": "host.keyword",
+						  "query": [% aonHost( o.host ).json %]
+					  }
+					   },
+                      [% END %]
+                      [% IF o.hostx %]
+					  {"query_string": {
+						  "default_field": "host.keyword",
+						  "query": [% o.hostx.json %]
 					  }
 					   },
                       [% END %]
                       [% IF o.src %]
 					  {"query_string": {
-						  "default_field": "logsource",
-						  "query": [% o.src.json %]
+						  "default_field": "logsource.keyword",
+						  "query": [% aonHost( o.src ).json %]
+					  }
+					   },
+                      [% END %]
+                      [% IF o.srcx %]
+					  {"query_string": {
+						  "default_field": "logsource.keyword",
+						  "query": [% o.srcx.json %]
 					  }
 					   },
                       [% END %]
@@ -361,6 +410,8 @@ sub options{
 return '
 host=s
 src=s
+hostx=s
+srcx=s
 size=s
 showpid
 mid=s
@@ -531,7 +582,9 @@ sub help{
 	return '
 
 --host <log host>     The syslog server.
+--hostx <log host>    The syslog server. This is passed raw.
 --src <src server>    The source server sending to the syslog server.
+--srcx <src server>   The source server sending to the syslog server. This is passed raw.
 --size <count>        The number of items to return.
 --pid <pid>           The PID that sent the message.
 
@@ -580,6 +633,22 @@ A list seperated by any of those will be transformed
 These may be used with program, facility, pid, or host.
 
 example: --program postfix,spamd
+
+
+
+HOST AND, OR, or NOT shortcut
+, OR
++ AND
+! NOT
+
+A list of hosts seperated by any of those will be transformed.
+A host name should always end in a period unless it is a FQDN.
+
+These may be used with host and src.
+
+example: --src foo.,mail.bar.
+
+results: /foo./ OR /mail.bar./
 
 
 

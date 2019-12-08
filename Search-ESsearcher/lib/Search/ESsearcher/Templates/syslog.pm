@@ -10,11 +10,11 @@ Search::ESsearcher::Templates::syslog - Provides syslog support for essearcher.
 
 =head1 VERSION
 
-Version 1.0.0
+Version 1.1.0
 
 =cut
 
-our $VERSION = '1.0.0';
+our $VERSION = '1.1.0';
 
 =head1 LOGSTASH
 
@@ -47,9 +47,29 @@ use the command line options field and fieldv.
 
 The syslog server.
 
+The search is done with .keyword appended to the field name.
+
+=head2 --hostx <log host>
+
+The syslog server.
+
+Does not run the it through aonHost.
+
+The search is done with .keyword appended to the field name.
+
 =head2 --src <src server>
 
 The source server sending to the syslog server.
+
+The search is done with .keyword appended to the field name.
+
+=head2 --srcx <src server>
+
+The source server sending to the syslog server.
+
+Does not run the it through aonHost.
+
+The search is done with .keyword appended to the field name.
 
 =head2  --program <program>
 
@@ -112,6 +132,22 @@ These may be used with program, facility, pid, or host.
     example: --program postfix,spamd
     
     results: postfix OR spamd
+
+=head1 HOST AND, OR, or NOT shortcut
+
+    , OR
+    + AND
+    ! NOT
+
+A list of hosts seperated by any of those will be transformed.
+A host name should always end in a period unless it is a FQDN.
+
+These may be used with host and src.
+
+example: --src foo.,mail.bar.
+
+results: /foo./ OR /mail.bar./
+
 
 =head1 date
 
@@ -358,7 +394,10 @@ A host name should always end in a period unless it is a FQDN.
 
 These may be used with host and src.
 
-example: --src wap0.foo.,printer.,a.foo.bar
+example: --src foo.,mail.bar.
+
+results: /foo./ OR /mail.bar./
+
 
 
 field and fieldv
