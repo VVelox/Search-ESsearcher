@@ -106,3 +106,13 @@ cpanm Search::ESsearcher
 apt install perl perl-base perl-modules make cpanminus
 cpanm Search::ESsearcher
 ```
+
+# Caveat
+
+Please be aware that if a similar search has not been ran for awhile,
+Elasticsearch will likely return a buggy/empty result that can't be
+used. The usual return when this happens is empty JSON just containing
+the key 'hits', which can be viewed via switch -R. When this happens,
+just wait a few minutes or so to try again and Elasticsearch should
+have reindex/cached/etc.
+
