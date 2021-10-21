@@ -58,6 +58,10 @@ robots.txt is requested, we would do it like below.
 essearcher -m httpAccess --dgte -5m --req robots.txt -n gt -w 2 -c 5
 ```
 
+This will search for requests with 'robots.txt' in it within the last
+5 minutes and will warn if the number of hits are great than 2 and go
+critical if greater than 5.
+
 # Extending
 
 It has 5 parts that are listed below.
