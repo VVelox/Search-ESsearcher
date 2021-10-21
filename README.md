@@ -86,7 +86,7 @@ It will search for those specified in the following order.
 
 ## FreeBSD
 
-````
+```
 pkg install perl5 p5-JSON p5-Error-Helper p5-Template p5-Template-Plugin-JSON p5-Time-ParseDate p5-Term-ANSIColor p5-Data-Dumper
 cpanm Search::ESsearcher
 ```
