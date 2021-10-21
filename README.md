@@ -31,6 +31,33 @@ as below.
 The elastic file is JSON that will be passed to hash and passed to
 [Search::Elasticsearch](https://metacpan.org/pod/Search::Elasticsearch)->new.
 
+# As A Nagios Style Check
+
+This requires three options, -n, -w, -c.
+
+```
+-n <check>
+-w <warn>
+-c <critical>
+
+Check is the equality to use when comparing the number of hits found
+for the search.
+
+gt >
+gte >=
+lt <
+lte <=
+
+Critical and warn are the thresholds to use.
+```
+
+So for example for httpAccess if we want to alert for number of times
+robots.txt is requested, we would do it like below.
+
+```
+essearcher -m httpAccess --dgte -5m --req robots.txt -n gt -w 2 -c 5
+```
+
 # Extending
 
 It has 5 parts that are listed below.
